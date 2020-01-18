@@ -37,7 +37,7 @@ void * workerThread(void * arg){
     get_section_count(start_line, end_line, section_num);    
 }
 
-void get_section_count(int start_line, int end_line){
+void get_section_count(int start_line, int end_line, int section_num){
 
     FILE *file = fopen(fileName, "r");
     int count = 0;

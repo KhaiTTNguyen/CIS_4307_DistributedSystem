@@ -22,6 +22,68 @@ the input file name (in_filename),
 and the elapsed execution time of the program, 
 and a list of words with their frequency of occurrence in the input text to a file named hw1_out.txt in the local directory.  
 */
+
+#include "header.h"
+
+map<string, int>* map_array;
+long file_length;
+long num_segments;
+
 int main (int argc, char *argv[]){  
+    /*---------Parsing arguments----------*/
+    if (argc < 2) {
+        cout << "Not enough arguments" <<endl;
+        return 1;
+    }
+    
+    num_segments = atoi(argv[2]);
+    char * fileName = (char*) alloca(sizeof(char));
+    fileName = argv[1];
+    
+    cout << "\nNum Segments are " << num_segments<< endl;
+    cout << "\nFilename is " << fileName << endl;
+    // printf("Value of filename %s\n", fileName); // not *filename
+
+    /*------Get total lines of file--------*/ 
+    int count = 0;  // Line counter (result) 
+    char c;  // To store a character read from file 
+
+    // Open the file 
+    FILE *fp = fopen(fileName, "r"); 
+  
+    // Check if file exists 
+    if (fp == NULL) { 
+        printf("Could not open file %s", fileName); 
+        return 0; 
+    } 
+  
+    // Extract characters from file and store in character c 
+    for (c = getc(fp); c != EOF; c = getc(fp)) 
+        if (c == '\n') // Increment count if this character is newline 
+            count = count + 1; 
+  
+    // Close the file 
+    fclose(fp); 
+    printf("The file %s has %d lines\n ", fileName, count); 
+
+    file_length = count;
+
+    /*---------Creating threads----------*/
+    // array which holds worker threads
+    pthread_t threads[num_segments];
+
+    spawn_worker_threads(num_segments, threads);
+    
+    // init array of worker_thread_maps
+    map_array = new map<string, int> [num_segments];
+
+    printf("Spawning done\n");
+
+    for (int i = 0; i < num_segments; i++){
+        pthread_join(threads[i], NULL);
+    }
+    
+    printf("Joining done\n");
+
     return 0;
 }

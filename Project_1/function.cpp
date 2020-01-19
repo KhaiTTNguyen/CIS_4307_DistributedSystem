@@ -56,7 +56,7 @@ void get_section_count(int start_line, int end_line, int section_num){
             count++;
         }
     }
-        fclose(file);
+    fclose(file);
 }
 
 bool isNumber(char * number){

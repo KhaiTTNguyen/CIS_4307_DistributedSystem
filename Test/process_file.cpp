@@ -41,7 +41,7 @@ int main (int argc, char *argv[]){
     int end_line = 10;
     //-----------------------------------
     unordered_set<string> word_dict;    // set name
-    ifstream input;                     // stream
+    ifstream input;                     // input stream
     string filename = fileName;         // convert to string type
 
     input.open(filename.c_str());
@@ -54,7 +54,8 @@ int main (int argc, char *argv[]){
 
     /*---------------------------Read words to set----------------------------*/
     // get words from file
-    for(string line; getline(input,line );){
+    string line;
+    for(line; getline(input,line );){
         // word variable to store word 
         string word; 
         line.erase(remove(line.begin(), line.end(), ','), line.end());
@@ -66,7 +67,6 @@ int main (int argc, char *argv[]){
         line.erase(remove(line.begin(), line.end(), '-'), line.end());
         line.erase(remove(line.begin(), line.end(), ':'), line.end());
         line.erase(remove(line.begin(), line.end(), ';'), line.end());
-        
 
         // making a string stream 
         stringstream iss(line); 
@@ -76,29 +76,95 @@ int main (int argc, char *argv[]){
             // add word to Set
             word_dict.insert(word);    
         }  
+        iss.clear();
     }
 
-    // iterate through set
+//    iterate through set
     cout << "\nThe elements in set are: "; 
     for (auto it = word_dict.begin(); it != word_dict.end(); it++){ 
         cout << *it << "\n"; 
     }
 
     /*---------------------------Check word in section----------------------------*/
-    // char line[MAXSTRING]; 
-    char line2[MAXSTRING];            
+    // reset input stream
+    input.clear();
+    input.seekg(0,input.beg);
+    input.close();
 
-    // char * word = NULL;
-    char * word2 = NULL;
-    
-    // FILE *fptr1 = fopen(fileName, "r");
-    FILE *fptr2 = fopen(fileName, "r"); // scan thru section
+    int turn = 0;
+    int count = 0;
 
-    // int count = 0;
-    // if ( fptr1 == NULL){
-    //     cout << "Thread" << section_num << "cannot open file" << endl;
-    //     exit;
-    // }
+    //--------------------------------------------------------------------------------
+    for (auto it = word_dict.begin(); it != word_dict.end(); it++){ 
+        ifstream input; 
+        input.open(filename.c_str());
+        while(input.fail()){
+            input.clear();
+            cout<<"Incorrect filename, please enter again: ";
+            cin>>filename;
+            input.open(filename.c_str());
+        }
+
+        // locate fptr
+        string section_line;
+        for(section_line; getline(input,section_line );){
+            if (count == start_line - 1){
+                cout << "At start line: " << section_line << endl;            
+                break; // fptr at line startline
+            }else{
+                count++;
+            }
+        }
+        
+        turn++;
+        cout << "Turn is " << turn << endl;
+        if (turn == 100){
+            exit(0);
+        }
+
+        string current_word;
+        // scan through section for line2
+        for(section_line; getline(input,section_line );){
+            section_line.erase(remove(section_line.begin(), section_line.end(), ','), section_line.end());
+            section_line.erase(remove(section_line.begin(), section_line.end(), '.'), section_line.end());
+            section_line.erase(remove(section_line.begin(), section_line.end(), '\"'), section_line.end());
+            section_line.erase(remove(section_line.begin(), section_line.end(), '\''), section_line.end());
+            section_line.erase(remove(section_line.begin(), section_line.end(), '!'), section_line.end());
+            section_line.erase(remove(section_line.begin(), section_line.end(), '?'), section_line.end());
+            section_line.erase(remove(section_line.begin(), section_line.end(), '-'), section_line.end());
+            section_line.erase(remove(section_line.begin(), section_line.end(), ':'), section_line.end());
+            section_line.erase(remove(section_line.begin(), section_line.end(), ';'), section_line.end());
+                
+            cout << "Current line is " << section_line << endl;
+            stringstream section_iss(section_line);
+
+            // Read and print each word. 
+            while (section_iss >> current_word){ 
+                cout<< "Current word is " << current_word << endl;
+                cout<< "Current *it is " << *it << endl;
+                // add to map    
+                if(current_word.compare(*it) == 0){
+                    cout << "Matching word is "<< current_word << endl;
+                }                
+            }
+
+            section_iss.clear();
+
+            // check if endline reached
+            if (count == end_line){
+                cout << "End line reached: " << section_line << endl;            
+                break; // fptr2 at line endline
+            }else{
+                count++;
+            }
+        }
+        // reset input stream
+        input.clear();
+        input.seekg(0,input.beg);
+        input.close();
+    }    
+
+    //-----------------------------------------------------------------------------------
 
     /* ----------------------- have to allocate memory for char** & char* -----------------------------*/
     // char* line = (char*) calloc(MAXSTRING, sizeof(char)); /* or other suitable maximum line size */
@@ -130,49 +196,11 @@ int main (int argc, char *argv[]){
     // cout<< "Value at list of word " << *list_of_words << endl;
     // while (list_of_words != NULL){
     //     // scan through section
-    //     // locate fptr2
-    //     while (fgets(line2, sizeof line2, fptr2) != NULL) /* read a line */{
-    //         if (count == start_line - 1){
-    //             printf("At start line: %s\n", line2);            
-    //             break; // fptr2 at line startline
-    //         }else{
-    //             count++;
-    //         }
-    //     }
-        
-    //     turn++;
-    //     cout << "Turn is " << turn << endl;
-    //     if (turn == 10){
-    //         exit(0);
-    //     }
+    //     
 
-    //     // scan through section for line2
-    //     while(fgets(line2,sizeof line2,fptr2) != NULL){
 
-    //         printf("Current line is %s\n", line2);
-    //         word2 = strtok(line2," ");
-    //         while(word2 != NULL){
-    //             printf("Word in line2 is %s\n", word2);
-                
-    //             // add to map    
-    //             if(strcmp(*list_of_words,word2) == 0){
-    //                 printf("Matching word is %s\n", word2);
-    //             }
-    //             word2 = strtok(NULL," ");
-    //         }
-            
-    //         // check if endline reached
-    //         if (count == end_line){
-    //             printf("End line reached: %s\n", line2);            
-    //             break; // fptr2 at line endline
-    //         }else{
-    //             count++;
-    //         }
-    //     }
-    //     printf("Got out here to rewind fptr2\n");
-    //     rewind(fptr2);
-    //     list_of_words++;
-    // }    
+
+
 
     //rewind(fptr1);
     // fclose(fptr1);

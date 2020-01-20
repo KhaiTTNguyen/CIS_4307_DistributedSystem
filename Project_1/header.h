@@ -26,7 +26,7 @@ using namespace std;
 #include <unordered_set>
 #include <map>
 
-extern map<string, int>* map_array;
+extern vector<map<string, int> *> mapVector;
 extern long file_length;
 extern long num_segments;
 

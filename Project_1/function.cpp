@@ -19,6 +19,10 @@ void spawn_worker_threads(int num_threads, pthread_t* threads){
             exit(1);
         }
     }
+
+    for (int i = 0; i < num_segments; i++) {
+        mapVector[i] = (map<std::string, int> *) (malloc(sizeof(map<string, int>)));
+    }
 }
 
 void * workerThread(void * arg){

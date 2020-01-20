@@ -25,7 +25,7 @@ and a list of words with their frequency of occurrence in the input text to a fi
 
 #include "header.h"
 
-map<string, int>* map_array;
+map<string, int>** map_array;
 long file_length;
 long num_segments;
 
@@ -76,14 +76,17 @@ int main (int argc, char *argv[]){
     
     // init array of worker_thread_maps
     map_array = new map<string, int> [num_segments];
+    
 
     printf("Spawning done\n");
 
     for (int i = 0; i < num_segments; i++){
         pthread_join(threads[i], NULL);
-    }
-    
+    }    
     printf("Joining done\n");
+
+
+
 
     return 0;
 }

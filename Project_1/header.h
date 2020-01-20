@@ -26,7 +26,10 @@ using namespace std;
 #include <unordered_set>
 #include <map>
 
-extern vector<map<string, int> *> mapVector;
+#define MAXSTRING 512
+
+extern vector<map<string, int>*> mapVector;
+extern char* fileName;
 extern long file_length;
 extern long num_segments;
 
@@ -34,6 +37,6 @@ bool isNumber(char * number);
 
 void spawn_worker_threads(int num_threads, pthread_t* threads);
 void * workerThread(void * arg);
-
+map<string,int> addToMap(char* word, map<string,int> givenMap);
 
 #endif

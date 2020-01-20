@@ -25,9 +25,10 @@ and a list of words with their frequency of occurrence in the input text to a fi
 
 #include "header.h"
 
-map<string, int>** map_array;
+vector<map<string, int>*> mapVector;
 long file_length;
 long num_segments;
+char* fileName;
 
 int main (int argc, char *argv[]){  
     /*---------Parsing arguments----------*/
@@ -71,12 +72,10 @@ int main (int argc, char *argv[]){
     /*---------Creating threads----------*/
     // array which holds worker threads
     pthread_t threads[num_segments];
+    // init array of worker_thread_maps
+    mapVector.resize(num_segments);
 
     spawn_worker_threads(num_segments, threads);
-    
-    // init array of worker_thread_maps
-    map_array = new map<string, int> [num_segments];
-    
 
     printf("Spawning done\n");
 
@@ -85,7 +84,10 @@ int main (int argc, char *argv[]){
     }    
     printf("Joining done\n");
 
-
+    for (int i = 0; i < num_segments; i++) {
+        cout << "size of map "<< i << " " << mapVector[i]->size(); 
+    }
+    /*----------------Feeding large map----------------*/
 
 
     return 0;

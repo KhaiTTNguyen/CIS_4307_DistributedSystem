@@ -7,8 +7,6 @@
 
 #include "header.h"
 
-
-
 void spawn_worker_threads(int num_threads, pthread_t* threads){
     // create worker threads
     for (size_t i = 0; i < num_threads; ++i){
@@ -20,6 +18,7 @@ void spawn_worker_threads(int num_threads, pthread_t* threads){
         }
     }
 
+    // init individual maps for eacah thread
     for (int i = 0; i < num_segments; i++) {
         mapVector[i] = (map<std::string, int> *) (malloc(sizeof(map<string, int>)));
     }
@@ -38,11 +37,7 @@ void * workerThread(void * arg){
     cout << "Start line is" << start_line << endl;
     cout << "End line is" << end_line << endl;
 
-    get_section_count(start_line, end_line, section_num);    
-}
-
-void get_section_count(int start_line, int end_line, int section_num){
-
+    // get_word_count_in_section
     FILE *file = fopen(fileName, "r");
     int count = 0;
     if ( file == NULL ){
@@ -50,17 +45,40 @@ void get_section_count(int start_line, int end_line, int section_num){
         exit;
     }
 
-    char line[256]; /* or other suitable maximum line size */
+    char line[MAXSTRING]; /* or other suitable maximum line size */
+    char* word;
     while (fgets(line, sizeof line, file) != NULL) /* read a line */{
-        if (count == start_line){
-            
-            //use line or in a function return it
-            //in case of a return first close the file with "fclose(file);"
-        }else{
-            count++;
+        if (count == end_line) {
+            cout << "Thread " << section_num << " reached end of segment\n";
+            break;
         }
+        if (count >= start_line && count < end_line) {
+            if (count == start_line) {
+                cout << "Thread " << section_num << " reached start of segment\n";
+            }
+            word = strtok(line, " *!#%&\'/\\()\"\n\r`:,.;?-”");
+            while (word != NULL) {
+                *mapVector[section_num] = addToMap(word, *mapVector[section_num]);
+                word = strtok(NULL, " *!#%&\'/\\()\"\n\r`:,.;?-”");
+            }
+        }
+        count++;
     }
     fclose(file);
+}
+
+map<string,int> addToMap(char* word, map<string,int> givenMap){
+    string str = string(word);
+    map<string, int>::iterator iter = givenMap.find(str);
+    //Not exist, create one
+    if (iter != givenMap.end()) {
+        givenMap.at(str) += 1;
+    }
+    //Already exist, increase count
+    else {
+        givenMap.insert(pair<string, int>(str, 1));
+    }
+    return givenMap;
 }
 
 bool isNumber(char * number){

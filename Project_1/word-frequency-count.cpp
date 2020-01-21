@@ -25,10 +25,12 @@ and a list of words with their frequency of occurrence in the input text to a fi
 
 #include "header.h"
 
-vector<map<string, int>*> mapVector;
+
 long file_length;
 long num_segments;
 char* fileName;
+pthread_mutex_t mutex_conn;
+
 
 int main (int argc, char *argv[]){  
     /*---------Parsing arguments----------*/
@@ -42,7 +44,7 @@ int main (int argc, char *argv[]){
     fileName = argv[1];
     
     cout << "\nNum Segments are " << num_segments<< endl;
-    cout << "\nFilename is " << fileName << endl;
+    //cout << "\nFilename is " << fileName << endl;
     // printf("Value of filename %s\n", fileName); // not *filename
 
     /*------Get total lines of file--------*/ 
@@ -65,7 +67,7 @@ int main (int argc, char *argv[]){
   
     // Close the file 
     fclose(fp); 
-    printf("The file %s has %d lines\n ", fileName, count); 
+    printf("The file %s has %d lines\n", fileName, count); 
 
     file_length = count;
 
@@ -73,9 +75,26 @@ int main (int argc, char *argv[]){
     // array which holds worker threads
     pthread_t threads[num_segments];
     // init array of worker_thread_maps
-    mapVector.resize(num_segments);
+    // mapVector.resize(num_segments);
 
-    spawn_worker_threads(num_segments, threads);
+    vector<Arguments*> args_vec;
+
+    for (int i = 0; i < num_segments; ++i){
+        std::map<std::string, int> wordMap;
+        
+        Arguments *section_arg = (Arguments* )malloc(sizeof(Arguments));
+        
+        section_arg->fileName = fileName;
+        section_arg->section_num = i;
+        section_arg->map = &wordMap;
+        
+        args_vec.push_back(section_arg);
+
+        if(pthread_create(&threads[i],NULL,workerThread,(void *)section_arg) != 0){
+            printf("Error: Failed to create thread\n");
+            exit(1);
+        }
+    }
 
     printf("Spawning done\n");
 
@@ -84,8 +103,8 @@ int main (int argc, char *argv[]){
     }    
     printf("Joining done\n");
 
-    for (int i = 0; i < num_segments; i++) {
-        cout << "size of map "<< i << " " << mapVector[i]->size(); 
+    for (int i = 0; i < args_vec.size(); i++) {
+        cout << args_vec[i]->map->size() << endl;
     }
     /*----------------Feeding large map----------------*/
 

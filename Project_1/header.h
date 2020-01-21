@@ -32,11 +32,18 @@ extern vector<map<string, int>*> mapVector;
 extern char* fileName;
 extern long file_length;
 extern long num_segments;
+extern pthread_mutex_t mutex_conn;
+
+typedef struct Arguments{
+    int section_num;
+    char* fileName;
+    std::map<std::string, int>* map;
+}Arguments;
+
 
 bool isNumber(char * number);
-
-void spawn_worker_threads(int num_threads, pthread_t* threads);
+void spawn_worker_threads(int num_threads, pthread_t* threads, char* filename);
 void * workerThread(void * arg);
-map<string,int> addToMap(char* word, map<string,int> givenMap);
+void addToMap(char* word, map<string,int>* givenMap);
 
 #endif

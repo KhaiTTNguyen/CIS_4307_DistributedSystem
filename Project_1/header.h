@@ -25,6 +25,8 @@ using namespace std;
 #include <unistd.h>
 #include <unordered_set>
 #include <map>
+#include <numeric>
+
 
 #define MAXSTRING 512
 

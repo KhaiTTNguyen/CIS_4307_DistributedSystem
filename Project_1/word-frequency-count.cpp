@@ -78,12 +78,12 @@ int main (int argc, char *argv[]){
     // mapVector.resize(num_segments);
 
     vector<Arguments*> args_vec;
-
+    Arguments *section_arg;
     for (int i = 0; i < num_segments; ++i){
         std::map<std::string, int> wordMap;
         
-        Arguments *section_arg = (Arguments* )malloc(sizeof(Arguments));
-        
+        section_arg = (Arguments* )malloc(sizeof(Arguments));
+
         section_arg->fileName = fileName;
         section_arg->section_num = i;
         section_arg->map = &wordMap;
@@ -106,8 +106,54 @@ int main (int argc, char *argv[]){
     for (int i = 0; i < args_vec.size(); i++) {
         cout << args_vec[i]->map->size() << endl;
     }
+    
     /*----------------Feeding large map----------------*/
+    
+    //Iterate through all small maps
+    std::map<string, int> dictionary;
+    for (int i = 0; i < num_segments; i++) {
+        
+        dictionary = std::accumulate( args_vec[i]->map->begin(), args_vec[i]->map->end(), std::map<string, int>(),[]( std::map<int, int> &m, const std::pair<const int, int> &p )
+        {
+            return ( m[p.first] +=p.second, m );
+        } );
+
+        // map<string, int>::iterator iter = args_vec[i]->map->begin();
+        // while (iter != args_vec[i]->map->end()) {
+        //     string word = iter->first;
+        //     int occurrence = iter->second;
+
+        //     //Add to dictionary
+        //     if (dictionary.empty()) {
+        //         dictionary.insert(pair<string, int>(word, occurrence));
+        //     } else {
+        //         map<string, int>::iterator search = dictionary.find(word);
+        //         if (search != dictionary.end()) {
+        //             dictionary.at(word) += occurrence;
+        //         } else {
+        //             dictionary.insert(pair<string, int>(word, occurrence));
+        //         }
+        //     }
+        //     iter++;
+        // }
+    }
+
+    for ( const auto &p : dictionary ) {
+        std::cout << "{ " << p.first << ", " << p.second << " } ";
+    }
+
+    std::cout << std::endl;
+    //Write the content of dictionary to output file
+    ofstream myfile;
+    myfile.open("hw1_out.txt");
+    map<string, int>::iterator it = dictionary.begin();
+    while (it != dictionary.end()) {
+        myfile << "Word:" << it->first << ":" << it->second << endl;
+        it++;
+    }
+    myfile.close();
 
 
+    free(section_arg);
     return 0;
 }

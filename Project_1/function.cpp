@@ -57,9 +57,9 @@ void * workerThread(void* arg){
     }
     fclose(file);
     
-    for (auto const& pair: *arg_sec->map) {
-        std::cout << "{" << pair.first << ": " << pair.second << "}\n";
-    }
+    // for (auto const& pair: *arg_sec->map) {
+    //     std::cout << "{" << pair.first << ": " << pair.second << "}\n";
+    // }
 
     pthread_mutex_unlock(&mutex_conn);
     

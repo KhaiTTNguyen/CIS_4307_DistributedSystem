@@ -17,9 +17,9 @@ void * workerThread(void* arg){
         end_line = file_length;
     } 
 
-    // cout << "Segment num is " << section_num<< endl;
-    // cout << "Start line is " << start_line << endl;
-    // cout << "End line is " << end_line << "\n" << endl;
+    cout << "Segment num is " << section_num<< endl;
+    cout << "Start line is " << start_line << endl;
+    cout << "End line is " << end_line << "\n" << endl;
 
     pthread_mutex_lock(&mutex_conn);
 
@@ -56,6 +56,11 @@ void * workerThread(void* arg){
         count++;
     }
     fclose(file);
+    
+    for (auto const& pair: *arg_sec->map) {
+        std::cout << "{" << pair.first << ": " << pair.second << "}\n";
+    }
+
     pthread_mutex_unlock(&mutex_conn);
     
 }

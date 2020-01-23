@@ -18,13 +18,13 @@ void * workerThread(void* arg){
     } 
 
     cout << "Segment num is " << section_num<< endl;
-    cout << "Start line is " << start_line << endl;
-    cout << "End line is " << end_line << "\n" << endl;
+    // cout << "Start line is " << start_line << endl;
+    // cout << "End line is " << end_line << "\n" << endl;
 
     pthread_mutex_lock(&mutex_conn);
 
     // get_word_count_in_section
-    printf("File name is %s\n", arg_sec->fileName);
+    // printf("File name is %s\n", arg_sec->fileName);
     
     FILE *file = fopen(arg_sec->fileName, "r");
     int count = 0;
@@ -34,45 +34,40 @@ void * workerThread(void* arg){
         pthread_exit(NULL);
     }
 
-    cout << "Thread " << section_num << "parsing words" << endl;
-
     char line[MAXSTRING]; /* or other suitable maximum line size */
     char* word;
-    while (fgets(line, sizeof line, file) != NULL) /* read a line */{
-        if (count == end_line) {
+    while (fgets(line, MAXSTRING, file) != NULL) /* read a line */{
+        if (count > end_line) {
             cout << "Thread " << section_num << " reached end of segment\n";
             break;
         }
-        if (count >= start_line && count < end_line) {
-            if (count == start_line) {
-                cout << "Thread " << section_num << " reached start of segment\n";
+        if (count >= start_line && count <= end_line) {
+            if (count == start_line) {                
+                cout << "Thread " << section_num << " reached start of segment" << endl;
             }
             word = strtok(line, " *!#%&\'/\\()\"\n\r`:,.;?-”");
             while (word != NULL) {
                 addToMap(word, arg_sec->map);
                 word = strtok(NULL, " *!#%&\'/\\()\"\n\r`:,.;?-”");
             }
+            // clear buff 
+            memset(line, 0, sizeof(line));
         }
         count++;
     }
     fclose(file);
-    
-    // for (auto const& pair: *arg_sec->map) {
-    //     std::cout << "{" << pair.first << ": " << pair.second << "}\n";
-    // }
 
     pthread_mutex_unlock(&mutex_conn);
-    
 }
 
 void addToMap(char* word, map<string,int>* givenMap){
     string str = string(word);
     map<string, int>::iterator iter = (*givenMap).find(str);
-    //Not exist, create one
+    //Already exist, increase count    
     if (iter != (*givenMap).end()) {
         (*givenMap).at(str) += 1;
     }
-    //Already exist, increase count
+    //Not exist, create one
     else {
         (*givenMap).insert(pair<string, int>(str, 1));
     }

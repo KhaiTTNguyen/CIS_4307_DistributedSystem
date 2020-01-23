@@ -44,8 +44,6 @@ int main (int argc, char *argv[]){
     fileName = argv[1];
     
     cout << "\nNum Segments are " << num_segments<< endl;
-    //cout << "\nFilename is " << fileName << endl;
-    // printf("Value of filename %s\n", fileName); // not *filename
 
     /*------Get total lines of file--------*/ 
     int count = 0;  // Line counter (result) 
@@ -78,10 +76,10 @@ int main (int argc, char *argv[]){
     // mapVector.resize(num_segments);
 
     vector<Arguments*> args_vec;
-    Arguments *section_arg;
     for (int i = 0; i < num_segments; ++i){
-        std::map<std::string, int> wordMap;
-        
+        map<string, int> wordMap;
+        Arguments *section_arg;
+
         section_arg = (Arguments* )malloc(sizeof(Arguments));
 
         section_arg->fileName = fileName;
@@ -90,7 +88,7 @@ int main (int argc, char *argv[]){
         
         args_vec.push_back(section_arg);
 
-        if(pthread_create(&threads[i],NULL,workerThread,(void *)section_arg) != 0){
+        if(pthread_create(&threads[i],NULL,workerThread,(void *)args_vec[i]) != 0){
             printf("Error: Failed to create thread\n");
             exit(1);
         }
@@ -104,56 +102,23 @@ int main (int argc, char *argv[]){
     printf("Joining done\n");
 
     for (int i = 0; i < args_vec.size(); i++) {
-        cout << args_vec[i]->map->size() << endl;
-    }
-    
-    /*----------------Feeding large map----------------*/
-    
-    //Iterate through all small maps
-    std::map<string, int> dictionary;
-    for (int i = 0; i < num_segments; i++) {
-        
-        dictionary = std::accumulate( args_vec[i]->map->begin(), args_vec[i]->map->end(), std::map<string, int>(),[]( std::map<int, int> &m, const std::pair<const int, int> &p )
-        {
-            return ( m[p.first] +=p.second, m );
-        } );
-
-        // map<string, int>::iterator iter = args_vec[i]->map->begin();
-        // while (iter != args_vec[i]->map->end()) {
-        //     string word = iter->first;
-        //     int occurrence = iter->second;
-
-        //     //Add to dictionary
-        //     if (dictionary.empty()) {
-        //         dictionary.insert(pair<string, int>(word, occurrence));
-        //     } else {
-        //         map<string, int>::iterator search = dictionary.find(word);
-        //         if (search != dictionary.end()) {
-        //             dictionary.at(word) += occurrence;
-        //         } else {
-        //             dictionary.insert(pair<string, int>(word, occurrence));
-        //         }
-        //     }
-        //     iter++;
-        // }
+        int mapSize = args_vec[i]->map->size();
     }
 
-    for ( const auto &p : dictionary ) {
-        std::cout << "{ " << p.first << ", " << p.second << " } ";
-    }
-
-    std::cout << std::endl;
     //Write the content of dictionary to output file
-    ofstream myfile;
-    myfile.open("hw1_out.txt");
-    map<string, int>::iterator it = dictionary.begin();
-    while (it != dictionary.end()) {
-        myfile << "Word:" << it->first << ":" << it->second << endl;
-        it++;
+    FILE * myfile = fopen("hw1_out.txt", "w"); 
+    
+    for (int i = 0; i < args_vec.size(); i++) {
+        int mapSize = args_vec[i]->map->size();
+        for (auto const& pair: *args_vec[i]->map) {
+            float freq = (float)pair.second / (float)args_vec[i]->map->size();
+            char* word = const_cast<char*>(pair.first.c_str());
+            fprintf( myfile, "{ %s : %7f }\n", word, freq);
+        }
+        
     }
-    myfile.close();
+    
+    fclose(myfile);
 
-
-    free(section_arg);
     return 0;
 }

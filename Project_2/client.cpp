@@ -32,12 +32,22 @@ int main(int argc, char *argv[])
     struct timeval start1, end1;
     gettimeofday(&start1, NULL);
 
+    /*--------------send file name to search ------------*/
+    send(clientSd, (char*)fileName, strlen(fileName), 0);
+    memset(&msg, 0, sizeof(msg));//clear the buffer
+
+
     dirName = strcat(dirName,"/");
     char * filePath = strcat(dirName ,fileName);
     FILE * myfile = fopen(filePath, "w"); 
-
-    fprintf(myfile, "hellow bonjour akeshite omedoto gozaimasu\n");
-    fprintf(myfile, "hellow bonne a;' 'd = nne hello mmmmm     peepamcnkssckms\n");
+    while(recv(clientSd, (char*)&msg, sizeof(msg), 0) != 0){
+        if (strcmp(msg," ") == 0){
+            break;
+        }
+        fprintf(myfile, msg);
+        fprintf(myfile, "\n");    
+        memset(&msg, 0, sizeof(msg));
+    }
     fclose(myfile);
     // while(1)
     // {

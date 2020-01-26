@@ -62,19 +62,19 @@ int main(int argc, char *argv[])
     int bytesRead, bytesWritten = 0;
     while(1)
     {
-        //receive a message from the client (listen)
-        cout << "Awaiting client response..." << endl;
-        memset(&msg, 0, sizeof(msg));//clear the buffer
-        bytesRead += recv(newSd, (char*)&msg, sizeof(msg), 0);
-        if(!strcmp(msg, "exit"))
-        {
-            cout << "Client has quit the session" << endl;
-            break;
-        }
-        cout << "Client: " << msg << endl;
-        cout << ">";
+      //   //receive a message from the client (listen)
+      //   cout << "Awaiting client response..." << endl;
+      //   memset(&msg, 0, sizeof(msg));//clear the buffer
+      //   bytesRead += recv(newSd, (char*)&msg, sizeof(msg), 0);
+      //   if(!strcmp(msg, "exit"))
+      //   {
+      //       cout << "Client has quit the session" << endl;
+      //       break;
+      //   }
+      //   cout << "File name received is: " << msg << endl;
         
         // taking server input 
+        cout << ">";
         string data;
         getline(cin, data);
         memset(&msg, 0, sizeof(msg)); //clear the buffer

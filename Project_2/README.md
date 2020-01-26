@@ -19,7 +19,10 @@ Program flow:
 - main process calculate word frequency & output to file 
 
 ## Test cases
-Different test cases you use to test your program: e.g., requesting an invalid file, requesting from a dead server
+- requesting a valid file
+- requesting an invalid file
+- requesting multiple files
+- requesting from a dead server
 
 ## Guide 
 

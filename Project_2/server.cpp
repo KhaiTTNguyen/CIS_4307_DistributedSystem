@@ -11,8 +11,13 @@ int main(int argc, char *argv[])
         exit(0);
     }
     //grab the port number
-    int port = atoi(argv[1]); char * fileName = argv[2];
+    int port = atoi(argv[1]); char * dirName = argv[2];
 
+   /*--------------Data structure for cache-------------*/
+   Cache* fileCache = (Cache*) calloc(1,sizeof(Cache));
+
+   cout << "File size of " << dirName << " is " << getFileSize(dirName) << endl;
+   
     //buffer to send and receive messages with
     char msg[READ_BUFF_SIZE];
      

@@ -33,9 +33,26 @@ using namespace std;
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <bits/stdc++.h> 
 
 using namespace std;
 
 #define READ_BUFF_SIZE 1500
+#define MAX_CACHE_SIZE 6.4e+7
+
+class Cache{
+    list<string> LRU_Queue; 
+    int cache_size;
+    std::map<std::string, char** > cache_map;
+public: 
+    Cache(int); 
+    void refer(string); 
+    void display(); 
+}; 
+  
+ 
+void refer(string fileName); 
+void display(); 
+int getFileSize (string fileName);
 
 #endif

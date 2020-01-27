@@ -1,6 +1,7 @@
 hello
+uyen
+annna
 khai
-polly
-bye
-anna
+1
+2
 

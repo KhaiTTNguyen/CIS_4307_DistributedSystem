@@ -16,39 +16,44 @@ Cache::Cache(int n)
 // Refers key x with in the LRU cache 
 void Cache::refer(string fileName) 
 { 
+    cout<< "Got in refer" << endl;
+    int fileSize = getFileSize(fileName);
     /*-------------------NOT IN CACHE-----------------*/ 
-    if (cache_map.find(fileName) == cache_map.end()) { 
+    if (cache_map.find(fileName) == cache_map.end() && cache_map.size() != 0) { // and map not empty
         // search thru dir (fileName)
         // if not - report to client
         // if yes - update cache...........
-        
+        cout << "Checking cache size" << endl;
         // cache is full 
-        if (cache_size + getFileSize(fileName) >= MAX_CACHE_SIZE) { 
+        if (cache_size + fileSize >= MAX_CACHE_SIZE) { 
             // delete least recently used element 
             string last = LRU_Queue.back(); 
-  
+                    cout << "about to pop" << endl;
             // Pops the last elmeent 
             LRU_Queue.pop_back(); 
+                    cout << "poped" << endl;
             // Erase "last" in map
             cache_map.erase(last);
-            
-            // push to front of queue 
-            LRU_Queue.push_front(fileName); 
-
-            // add file content to Map
-            //............... 
-             // transfer file to client
-            //.......................
-        } 
+        }
     } 
   
     /*-------------------IN CACHE-----------------*/
     else {
-        // push to front of queue
-        LRU_Queue.push_front(fileName); 
-        // transfer file to client
-        //.......................
+                cout << "Adding to cache queue" << endl;
+        // delete at that position
+        LRU_Queue.remove(fileName);
     }
+    // push to front of queue 
+    LRU_Queue.push_front(fileName); 
+
+    // add file content to Map
+    cache_map.insert({ fileName, "mmmmmmmmmmmmmm" }); 
+
+    // increase cache_size record
+    cache_size += fileSize;
+    cout<< "Current siuze is" << cache_size << endl;
+    // transfer file to client
+    //.......................
 } 
   
 // Function to display contents of cache 

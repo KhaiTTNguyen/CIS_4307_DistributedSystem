@@ -38,12 +38,13 @@ using namespace std;
 using namespace std;
 
 #define READ_BUFF_SIZE 1500
-#define MAX_CACHE_SIZE 6.4e+7
+#define MAX_CACHE_SIZE 30
+//6.4e+7
 
 class Cache{
     list<string> LRU_Queue; 
     int cache_size;
-    std::map<std::string, char** > cache_map;
+    std::map<std::string, string > cache_map;
 public: 
     Cache(int); 
     void refer(string); 

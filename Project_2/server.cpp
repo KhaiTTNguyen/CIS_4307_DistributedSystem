@@ -14,10 +14,17 @@ int main(int argc, char *argv[])
     int port = atoi(argv[1]); char * dirName = argv[2];
 
    /*--------------Data structure for cache-------------*/
-   Cache* fileCache = (Cache*) calloc(1,sizeof(Cache));
 
-   cout << "File size of " << dirName << " is " << getFileSize(dirName) << endl;
-   
+   Cache ca(0); 
+      // 132
+      ca.refer("khai.txt"); 
+      ca.refer("khai2.txt"); 
+      ca.refer("khai3.txt"); 
+      ca.refer("khai.txt"); 
+      ca.refer("khai3.txt"); 
+      ca.refer("khai.txt"); 
+      ca.display(); 
+
     //buffer to send and receive messages with
     char msg[READ_BUFF_SIZE];
      

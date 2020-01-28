@@ -111,6 +111,7 @@ string readFileContent(string fileName){
     while(file){
     std::getline(file, line);
         buffer.append(line);
+        buffer.append("\n");
     }
     file.close();
     return buffer;

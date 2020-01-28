@@ -1,3 +1,9 @@
+// Khai Nguyen
+// TUID: 915552057
+// Assignment: HW2
+// Course: CIS 4307 - Spring 2020
+
+// Usage: tcp_client server_host server_port file_name directory
 #include "header.h"
 
 using namespace std;

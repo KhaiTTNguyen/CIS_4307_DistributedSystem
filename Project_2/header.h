@@ -34,6 +34,8 @@ using namespace std;
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <bits/stdc++.h> 
+#include <dirent.h>
+#include <errno.h>
 
 using namespace std;
 
@@ -47,13 +49,14 @@ class Cache{
     std::map<std::string, string > cache_map;
 public: 
     Cache(int); 
-    int refer(string); 
+    int refer(string, string); 
     void display(); 
 }; 
   
-int refer(string fileName); 
+int refer(string fileName, string dirName); 
 void display(); 
 int getFileSize (string fileName);
 string readFileContent(string fileName);
+int searchDir(string dir, string file);
 
 #endif

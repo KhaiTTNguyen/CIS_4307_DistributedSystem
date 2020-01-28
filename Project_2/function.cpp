@@ -1,6 +1,6 @@
 // Khai Nguyen
 // TUID: 915552057
-// Assignment: HW1
+// Assignment: HW2
 // Course: CIS 4307 - Spring 2020
 // Filename: function.cpp
 // Usage: to build functions
@@ -18,7 +18,7 @@ Cache::Cache(int n)
 return -1 if fails - file too big or no file found in cache & specified dir
 return 0 on success, cache updated
 */
-int Cache::refer(string fileName) 
+int Cache::refer(string fileName, string dirName) 
 { 
     cout<< "Got in refer" << endl;
     int fileSize = getFileSize(fileName);
@@ -31,14 +31,15 @@ int Cache::refer(string fileName)
     /*-------------------NOT IN CACHE-----------------*/ 
     // first element
     if (cache_map.find(fileName) == cache_map.end() && cache_map.size() == 0){
-        cache_map.insert({ fileName, "mmmmmmmmmmmmmm" }); 
+        cache_map.insert({ fileName, readFileContent(fileName) }); 
         cache_size += fileSize;
     }
     else if (cache_map.find(fileName) == cache_map.end() && cache_map.size() != 0) { // and map not empty
         // search thru dir (fileName)
-
-        // if not - report to client - return -1 ---> no files
-        // if yes - update cache...........
+        if (searchDir(dirName, fileName) != 1){
+            return -1; //report to client ---> no files
+        }
+        // if yes - update cache
         cout << "Checking cache size" << endl;
         // cache is full 
         while (cache_size + fileSize > MAX_CACHE_SIZE) { 
@@ -53,12 +54,11 @@ int Cache::refer(string fileName)
         // increase cache_size record
         cache_size += fileSize;
          // add file content to Map EDITTING
-        cache_map.insert({ fileName, "mmmmmmmmmmmmmm" }); 
+        cache_map.insert({ fileName, readFileContent(fileName) }); 
     } 
   
     /*-------------------IN CACHE-----------------*/
     else {
-                cout << "Adding to cache queue" << endl;
         // delete at that position
         LRU_Queue.remove(fileName);
     }
@@ -66,9 +66,6 @@ int Cache::refer(string fileName)
     LRU_Queue.push_front(fileName);
     cout<< "Current siuze after adding "<< fileName << " is " << cache_size << endl; 
     return 1;
-
-    // transfer file to client transferFile(fileName, )
-    //.......................
 } 
   
 // Function to display contents of cache 
@@ -115,4 +112,25 @@ string readFileContent(string fileName){
     }
     file.close();
     return buffer;
+}
+
+
+// search in directory
+// return 1 if succes OR errno if fail
+int searchDir(string dir, string file){
+    DIR *dp;
+    struct dirent *dirp;
+
+    if((dp = opendir(dir.c_str())) == NULL){
+      cout << "Error(" << errno << ") opening " << dir << endl;
+      return errno;
+    }
+    while ((dirp = readdir(dp)) != NULL){      
+        if (file.compare(dirp->d_name)){
+            closedir(dp);
+            return 1;
+        }
+    }
+    closedir(dp);
+    return -1;
 }

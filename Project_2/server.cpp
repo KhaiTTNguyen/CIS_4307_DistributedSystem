@@ -1,3 +1,7 @@
+// Khai Nguyen
+// TUID: 915552057
+// Assignment: HW2
+// Course: CIS 4307 - Spring 2020
 
 #include "header.h"
 
@@ -25,10 +29,13 @@ int main(int argc, char *argv[])
     //   ca.display(); ca.refer("khai.txt"); 
     //   ca.display(); ca.refer("khai3.txt"); 
     //   ca.display(); ca.refer("khai.txt"); 
-    
-    string current = readFileContent("khai.txt");
-    cout<< "File content is " << current << endl;
 
+    int i = searchDir(".","khai.txt");
+    cout<< "File is in dir if = " << i << endl;
+
+    // transfer file to client transferFile(fileName, )
+    //....................... 
+    
     //buffer to send and receive messages with
     char msg[READ_BUFF_SIZE];
      

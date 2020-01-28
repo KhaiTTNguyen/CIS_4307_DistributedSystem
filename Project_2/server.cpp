@@ -25,6 +25,9 @@ int main(int argc, char *argv[])
     //   ca.display(); ca.refer("khai.txt"); 
     //   ca.display(); ca.refer("khai3.txt"); 
     //   ca.display(); ca.refer("khai.txt"); 
+    
+    string current = readFileContent("khai.txt");
+    cout<< "File content is " << current << endl;
 
     //buffer to send and receive messages with
     char msg[READ_BUFF_SIZE];

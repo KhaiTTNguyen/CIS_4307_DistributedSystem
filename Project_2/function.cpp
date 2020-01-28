@@ -83,7 +83,7 @@ void Cache::display()
     cout << endl; 
 } 
 
-
+// return file size
 int getFileSize (string fileName){
     char filePath[fileName.size() + 1];
 	strcpy(filePath, fileName.c_str());
@@ -100,4 +100,18 @@ int getFileSize (string fileName){
     fclose(fp);
 
     return len;
+}
+
+// read a whole file into a string
+string readFileContent(string fileName){
+    std::ifstream file;
+    file.open(fileName);
+    std::string buffer;
+    std::string line;
+    while(file){
+    std::getline(file, line);
+        buffer.append(line);
+    }
+    file.close();
+    return buffer;
 }

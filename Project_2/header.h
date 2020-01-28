@@ -54,5 +54,6 @@ public:
 int refer(string fileName); 
 void display(); 
 int getFileSize (string fileName);
+string readFileContent(string fileName);
 
 #endif

@@ -14,27 +14,46 @@ Cache::Cache(int n)
 } 
   
 // Refers key x with in the LRU cache 
-void Cache::refer(string fileName) 
+/*
+return -1 if fails - file too big or no file found in cache & specified dir
+return 0 on success, cache updated
+*/
+int Cache::refer(string fileName) 
 { 
     cout<< "Got in refer" << endl;
     int fileSize = getFileSize(fileName);
+    
+    /* file too large */
+    if (fileSize > MAX_CACHE_SIZE){
+        return -1;
+    }
+
     /*-------------------NOT IN CACHE-----------------*/ 
-    if (cache_map.find(fileName) == cache_map.end() && cache_map.size() != 0) { // and map not empty
+    // first element
+    if (cache_map.find(fileName) == cache_map.end() && cache_map.size() == 0){
+        cache_map.insert({ fileName, "mmmmmmmmmmmmmm" }); 
+        cache_size += fileSize;
+    }
+    else if (cache_map.find(fileName) == cache_map.end() && cache_map.size() != 0) { // and map not empty
         // search thru dir (fileName)
-        // if not - report to client
+
+        // if not - report to client - return -1 ---> no files
         // if yes - update cache...........
         cout << "Checking cache size" << endl;
         // cache is full 
-        if (cache_size + fileSize >= MAX_CACHE_SIZE) { 
+        while (cache_size + fileSize > MAX_CACHE_SIZE) { 
             // delete least recently used element 
-            string last = LRU_Queue.back(); 
-                    cout << "about to pop" << endl;
-            // Pops the last elmeent 
+            string last = LRU_Queue.back();
+             
             LRU_Queue.pop_back(); 
-                    cout << "poped" << endl;
-            // Erase "last" in map
             cache_map.erase(last);
+            cache_size -= getFileSize(last);
         }
+
+        // increase cache_size record
+        cache_size += fileSize;
+         // add file content to Map EDITTING
+        cache_map.insert({ fileName, "mmmmmmmmmmmmmm" }); 
     } 
   
     /*-------------------IN CACHE-----------------*/
@@ -44,15 +63,11 @@ void Cache::refer(string fileName)
         LRU_Queue.remove(fileName);
     }
     // push to front of queue 
-    LRU_Queue.push_front(fileName); 
+    LRU_Queue.push_front(fileName);
+    cout<< "Current siuze after adding "<< fileName << " is " << cache_size << endl; 
+    return 1;
 
-    // add file content to Map
-    cache_map.insert({ fileName, "mmmmmmmmmmmmmm" }); 
-
-    // increase cache_size record
-    cache_size += fileSize;
-    cout<< "Current siuze is" << cache_size << endl;
-    // transfer file to client
+    // transfer file to client transferFile(fileName, )
     //.......................
 } 
   

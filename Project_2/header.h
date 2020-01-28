@@ -38,7 +38,7 @@ using namespace std;
 using namespace std;
 
 #define READ_BUFF_SIZE 1500
-#define MAX_CACHE_SIZE 30
+#define MAX_CACHE_SIZE 17
 //6.4e+7
 
 class Cache{
@@ -47,12 +47,11 @@ class Cache{
     std::map<std::string, string > cache_map;
 public: 
     Cache(int); 
-    void refer(string); 
+    int refer(string); 
     void display(); 
 }; 
   
- 
-void refer(string fileName); 
+int refer(string fileName); 
 void display(); 
 int getFileSize (string fileName);
 

@@ -16,14 +16,15 @@ int main(int argc, char *argv[])
    /*--------------Data structure for cache-------------*/
 
    Cache ca(0); 
-      // 132
-      ca.refer("khai.txt"); 
-      ca.refer("khai2.txt"); 
-      ca.refer("khai3.txt"); 
-      ca.refer("khai.txt"); 
-      ca.refer("khai3.txt"); 
-      ca.refer("khai.txt"); 
-      ca.display(); 
+      // 1
+    //   ca.refer("khai.txt"); 
+    //   ca.display(); 
+    //   ca.refer("khai2.txt"); 
+    //   ca.display(); 
+    //   ca.refer("khai3.txt"); 
+    //   ca.display(); ca.refer("khai.txt"); 
+    //   ca.display(); ca.refer("khai3.txt"); 
+    //   ca.display(); ca.refer("khai.txt"); 
 
     //buffer to send and receive messages with
     char msg[READ_BUFF_SIZE];

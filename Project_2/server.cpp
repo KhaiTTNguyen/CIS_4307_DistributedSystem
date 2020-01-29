@@ -9,7 +9,7 @@
 int main(int argc, char *argv[])
 {
     //for the server, we only need to specify a port number
-    if(argc < 2)
+    if(argc < 3)
     {
         cerr << "Usage: ./myserver port file_directory" << endl;
         exit(0);
@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
    /*--------------Data structure for cache-------------*/
 
-   Cache ca(0); 
+    Cache file_cache(0); 
       // 1
     //   ca.refer("khai.txt"); 
     //   ca.display(); 
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     //   ca.display(); ca.refer("khai3.txt"); 
     //   ca.display(); ca.refer("khai.txt"); 
 
-    int i = searchDir(".","khai.txt");
+    int i = searchDir(".","kha.txt");
     cout<< "File is in dir if = " << i << endl;
 
     // transfer file to client transferFile(fileName, )

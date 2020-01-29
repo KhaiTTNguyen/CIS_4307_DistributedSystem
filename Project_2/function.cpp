@@ -126,6 +126,7 @@ int searchDir(string dir, string file){
       return errno;
     }
     while ((dirp = readdir(dp)) != NULL){      
+        cout<< "Checking file " << dirp->d_name << endl;
         if (file.compare(dirp->d_name)){
             closedir(dp);
             return 1;

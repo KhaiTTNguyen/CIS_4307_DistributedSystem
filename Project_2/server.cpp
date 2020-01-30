@@ -21,8 +21,6 @@ int main(int argc, char *argv[])
 
     Cache file_cache(0); 
 
-    int i = searchDir(".","kha.txt");
-    
     //buffer to send and receive messages with
     char msg[READ_BUFF_SIZE];
      
@@ -65,15 +63,7 @@ int main(int argc, char *argv[])
     //we need a new address to connect with the client
     sockaddr_in newSockAddr;
     socklen_t newSockAddrSize = sizeof(newSockAddr);
-    //accept, create a new socket descriptor to 
-    //handle the new connection with client
-    int newSd = accept(serverSd, (sockaddr *)&newSockAddr, &newSockAddrSize);
-   
-    if(newSd < 0)
-    {
-        cerr << "Error accepting request from client!" << endl;
-        exit(1);
-    }
+
     //lets keep track of the session time
     struct timeval start1, end1;
     gettimeofday(&start1, NULL);
@@ -81,7 +71,17 @@ int main(int argc, char *argv[])
     int bytesRead, bytesWritten = 0;
     while(1)
     {
-      //   //receive a message from the client (listen)
+      //
+            //accept, create a new socket descriptor to 
+        //handle the new connection with client
+        int newSd = accept(serverSd, (sockaddr *)&newSockAddr, &newSockAddrSize);
+    
+        if(newSd < 0)
+        {
+            cerr << "Error accepting request from client!" << endl;
+            exit(1);
+        }
+         //receive a message from the client (listen)
         memset(&msg, 0, sizeof(msg));//clear the buffer
         bytesRead += recv(newSd, (char*)&msg, sizeof(msg), 0);
         cout <<  "Client " << inet_ntoa(newSockAddr.sin_addr) << " is requesting file " << msg << endl;
@@ -96,7 +96,6 @@ int main(int argc, char *argv[])
 	        strcpy(filePath, fileName.c_str());
             FILE *fp = fopen(filePath, "r");
             while(fgets(msg, sizeof(msg), fp) != NULL){
-                printf("%s\n", msg);
                 send(newSd, (char*)&msg, strlen(msg), 0);
                 memset(&msg, 0, sizeof(msg)); //clear the buffer
             }
@@ -108,18 +107,10 @@ int main(int argc, char *argv[])
             memset(&msg, 0, sizeof(msg));
         }
 
-        cout << "Type \"done\" for next file>";
-        string data;
-        getline(cin, data);
-        memset(&msg, 0, sizeof(msg)); //clear the buffer
-        strcpy(msg, data.c_str());
-        //send to the client that server has closed the connection
-        send(newSd, (char*)&msg, strlen(msg), 0);
-        break;
+        close(newSd);
     }
     //we need to close the socket descriptors after we're all done
     gettimeofday(&end1, NULL);
-    close(newSd);
     close(serverSd);
     cout << "********Session********" << endl;
     cout << " Bytes read: " << bytesRead << endl;

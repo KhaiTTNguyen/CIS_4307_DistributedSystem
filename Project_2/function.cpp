@@ -20,27 +20,21 @@ return 1 on success, cache updated
 */
 int Cache::refer(string fileName, string dirName) 
 { 
-    int fileSize = getFileSize(fileName);
-    
-    /* file too large - still transfer but not put in cache */
-    if (fileSize > MAX_CACHE_SIZE){
-        return 1;
-    }
-
     /*-------------------NOT IN CACHE-----------------*/ 
     // first element
-    if (cache_map.find(fileName) == cache_map.end() && cache_size == 0){
+    if (cache_map.find(fileName) == cache_map.end()) {
         cout << "Cache miss. ";
-        cache_map.insert({ fileName, readFileContent(fileName) }); 
-        cache_size += fileSize;
-    }
-    else if (cache_map.find(fileName) == cache_map.end() && cache_size != 0) { // and map not empty
-        cout << "Cache miss. ";
-        // search thru dir (fileName)
         if (searchDir(dirName, fileName) != 1){
             // cout << "Searched in dir" << endl;
             return -1; //report to client ---> no files
         }
+        int fileSize = getFileSize(fileName);
+
+        /* file too large - still transfer but not put in cache */
+        if (fileSize > MAX_CACHE_SIZE){
+            return 1;
+        }
+        
         // if yes - update cache
         // cache is full 
         while (cache_size + fileSize > MAX_CACHE_SIZE) { 
@@ -120,19 +114,35 @@ string readFileContent(string fileName){
 // search in directory
 // return 1 if succes OR errno if fail
 int searchDir(string dir, string file){
-    DIR *dp;
-    struct dirent *dirp;
+    // DIR *dp;
+    // struct dirent *dirp;
 
-    if((dp = opendir(dir.c_str())) == NULL){
-      cout << "Error(" << errno << ") opening " << dir << endl;
-      return errno;
+    // if((dp = opendir(dir.c_str())) == NULL){
+    //   cout << "Error(" << errno << ") opening " << dir << endl;
+    //   return errno;
+    // }
+    // while ((dirp = readdir(dp)) != NULL){   
+           
+    //     if (file.compare(dirp->d_name)){
+    //         closedir(dp);
+    //         return 1;
+    //     }
+    // }
+    // closedir(dp);
+    char dirName [50] = { "" };
+    char * filePath;
+    if (dir.compare(".") != 0){
+        strcpy(dirName,  "./");
     }
-    while ((dirp = readdir(dp)) != NULL){      
-        if (file.compare(dirp->d_name)){
-            closedir(dp);
-            return 1;
-        }
-    }
-    closedir(dp);
-    return -1;
+
+    strcat(dirName,dir.c_str());
+    strcat(dirName,"/");    
+    filePath = strcat(dirName ,file.c_str());
+
+    FILE * myfile = fopen(filePath, "r"); 
+    if (myfile == NULL) { 
+        printf("Could not open file %s\n", filePath); 
+        return -1; 
+    } 
+    return 1;
 }

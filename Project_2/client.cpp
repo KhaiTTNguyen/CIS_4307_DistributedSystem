@@ -75,9 +75,7 @@ int main(int argc, char *argv[])
         fwrite(msg , 1 , sizeof(msg) , myfile );   
         memset(&msg, 0, sizeof(msg));
     }
-    cout<< "Closing file"<< endl;
     fclose(myfile);
-    cout<< "Closed file"<< endl;
     // while(1)
     // {
     //     // cout << ">";

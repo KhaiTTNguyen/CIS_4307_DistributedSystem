@@ -3,15 +3,15 @@
 
 # define a target for the application
 #
-all: myserver myclient
+all: tcp_server tcp_client
 
 # define a target to link the application
 #
-myserver: server.cpp function.cpp
-	g++ server.cpp function.cpp -o myserver
+tcp_server: server.cpp function.cpp
+	g++ server.cpp function.cpp -o tcp_server
 
-myclient: client.cpp
-	g++ client.cpp -o myclient
+tcp_client: client.cpp
+	g++ client.cpp -o tcp_client
 
 # define a target to clean the directory
 #

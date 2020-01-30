@@ -30,13 +30,13 @@ Program flow:
 
 ```bash
 $ make 
-$ ./myserver 9089 .
+$ ./tcp_server 9089 .
 Client 127.0.0.1 is requesting file khai.txt
 Cache miss. khai.txt sent to the client
 ```
 Open another bash window and do
 ```bash
-$ ./myclient 127.0.0.1 9089 khai.txt
+$ ./tcp_client 127.0.0.1 9089 khai.txt
 khai.txt saved
 ```
 

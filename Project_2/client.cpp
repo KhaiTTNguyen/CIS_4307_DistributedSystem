@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         cout<<"Error connecting to socket!"<<endl; 
         exit(0);
     }
-    cout << "Connected to the server!" << endl;
+    
     int bytesRead, bytesWritten = 0;
     struct timeval start1, end1;
     gettimeofday(&start1, NULL);
@@ -42,19 +42,42 @@ int main(int argc, char *argv[])
     send(clientSd, (char*)fileName, strlen(fileName), 0);
     memset(&msg, 0, sizeof(msg));//clear the buffer
 
+    if (mkdir(dirName, 0777) == -1) {
+        if (errno != EEXIST){
+            cerr << "Error :  " << strerror(errno) << endl; 
+            return -1;
+        }
+    }
 
-    dirName = strcat(dirName,"/");
-    char * filePath = strcat(dirName ,fileName);
+    char dir [50];
+    strcpy(dir,  "./");
+    strcat(dir,dirName);
+    strcat(dir,"/");
+    char * filePath = strcat(dir ,fileName);
+
     FILE * myfile = fopen(filePath, "w"); 
-    while(recv(clientSd, (char*)&msg, sizeof(msg), 0) != 0){
-        if (strcmp(msg," ") == 0){
+    if (myfile == NULL) { 
+        printf("Could not open file %s", filePath); 
+        return -1; 
+    } 
+
+    while(1){
+        recv(clientSd, (char*)&msg, sizeof(msg), 0);
+        if (strcmp(msg, "done")){
+            cout << fileName << " saved" << endl;
             break;
         }
-        fprintf(myfile, msg);
-        fprintf(myfile, "\n");    
+        if(!strcmp(msg, "File not found!")){
+            cout << "File " << fileName << " does not exist in the server" << endl;
+            break;
+        }
+        fprintf(stdout, msg);
+        fwrite(msg , 1 , sizeof(msg) , myfile );   
         memset(&msg, 0, sizeof(msg));
     }
+    cout<< "Closing file"<< endl;
     fclose(myfile);
+    cout<< "Closed file"<< endl;
     // while(1)
     // {
     //     // cout << ">";
@@ -75,7 +98,7 @@ int main(int argc, char *argv[])
 
     //     // stopped at this recv syscall
     //     bytesRead += recv(clientSd, (char*)&msg, sizeof(msg), 0);
-    //     if(!strcmp(msg, "exit")){
+    //     if(!strcmp(msg, "File not found!")){
     //         cout << "Server has quit the session" << endl;
     //         break;
     //     }
@@ -83,13 +106,6 @@ int main(int argc, char *argv[])
     // }
 
     
-    gettimeofday(&end1, NULL);
     close(clientSd);
-    cout << "********Session********" << endl;
-    cout << "Bytes written: " << bytesWritten << 
-    " Bytes read: " << bytesRead << endl;
-    cout << "Elapsed time: " << (end1.tv_sec- start1.tv_sec) 
-      << " secs" << endl;
-    cout << "Connection closed" << endl;
     return 0;    
 }

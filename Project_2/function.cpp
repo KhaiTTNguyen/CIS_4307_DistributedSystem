@@ -16,31 +16,32 @@ Cache::Cache(int n)
 // Refers key x with in the LRU cache 
 /*
 return -1 if fails - file too big or no file found in cache & specified dir
-return 0 on success, cache updated
+return 1 on success, cache updated
 */
 int Cache::refer(string fileName, string dirName) 
 { 
-    cout<< "Got in refer" << endl;
     int fileSize = getFileSize(fileName);
     
-    /* file too large */
+    /* file too large - still transfer but not put in cache */
     if (fileSize > MAX_CACHE_SIZE){
-        return -1;
+        return 1;
     }
 
     /*-------------------NOT IN CACHE-----------------*/ 
     // first element
-    if (cache_map.find(fileName) == cache_map.end() && cache_map.size() == 0){
+    if (cache_map.find(fileName) == cache_map.end() && cache_size == 0){
+        cout << "Cache miss. ";
         cache_map.insert({ fileName, readFileContent(fileName) }); 
         cache_size += fileSize;
     }
-    else if (cache_map.find(fileName) == cache_map.end() && cache_map.size() != 0) { // and map not empty
+    else if (cache_map.find(fileName) == cache_map.end() && cache_size != 0) { // and map not empty
+        cout << "Cache miss. ";
         // search thru dir (fileName)
         if (searchDir(dirName, fileName) != 1){
+            // cout << "Searched in dir" << endl;
             return -1; //report to client ---> no files
         }
         // if yes - update cache
-        cout << "Checking cache size" << endl;
         // cache is full 
         while (cache_size + fileSize > MAX_CACHE_SIZE) { 
             // delete least recently used element 
@@ -59,12 +60,13 @@ int Cache::refer(string fileName, string dirName)
   
     /*-------------------IN CACHE-----------------*/
     else {
+        cout << "Cache hit. ";
         // delete at that position
         LRU_Queue.remove(fileName);
     }
     // push to front of queue 
     LRU_Queue.push_front(fileName);
-    cout<< "Current siuze after adding "<< fileName << " is " << cache_size << endl; 
+    //cout<< "Current size after adding "<< fileName << " is " << cache_size << endl; 
     return 1;
 } 
   
@@ -88,7 +90,7 @@ int getFileSize (string fileName){
     FILE *fp = fopen(filePath, "r");
     int len = 0;
     if( fp == NULL )  {
-        perror ("Error opening file");
+        perror ("Error opening file when getting fileSize");
         return(-1);
     }
     fseek(fp, 0, SEEK_END);
@@ -126,7 +128,6 @@ int searchDir(string dir, string file){
       return errno;
     }
     while ((dirp = readdir(dp)) != NULL){      
-        cout<< "Checking file " << dirp->d_name << endl;
         if (file.compare(dirp->d_name)){
             closedir(dp);
             return 1;

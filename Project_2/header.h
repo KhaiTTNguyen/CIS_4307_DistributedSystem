@@ -17,6 +17,7 @@ using namespace std;
 #include <string>
 #include <string.h>
 #include <stdio.h>
+#include <sys/stat.h> 
 #include <stdlib.h>
 #include <ctype.h> // for size_t
 #include <pthread.h>
@@ -37,11 +38,11 @@ using namespace std;
 #include <dirent.h>
 #include <errno.h>
 
+
 using namespace std;
 
 #define READ_BUFF_SIZE 1500
-#define MAX_CACHE_SIZE 17
-//6.4e+7
+#define MAX_CACHE_SIZE 6.4e+7
 
 class Cache{
     list<string> LRU_Queue; 

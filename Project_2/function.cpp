@@ -123,7 +123,7 @@ int searchDir(string dir, string file){
     // }
     // while ((dirp = readdir(dp)) != NULL){   
            
-    //     if (file.compare(dirp->d_name)){
+    //     if (file.compare(dirp->d_name.c_str())){
     //         closedir(dp);
     //         return 1;
     //     }

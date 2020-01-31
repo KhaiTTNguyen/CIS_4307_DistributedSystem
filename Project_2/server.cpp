@@ -96,14 +96,14 @@ int main(int argc, char *argv[])
 	        strcpy(filePath, fileName.c_str());
             FILE *fp = fopen(filePath, "r");
             while(fgets(msg, sizeof(msg), fp) != NULL){
-                send(newSd, (char*)&msg, strlen(msg), 0);
+                send(newSd, (char*)msg, strlen(msg), 0);
                 memset(&msg, 0, sizeof(msg)); //clear the buffer
             }
-            //....................... 
+
         } else {
             memset(&msg, 0, sizeof(msg)); //clear the buffer
             strcpy(msg, "File not found!"); 
-            send(newSd, (char*)&msg, strlen(msg), 0);
+            send(newSd, (char*)msg, strlen(msg), 0);
             memset(&msg, 0, sizeof(msg));
         }
 

@@ -67,11 +67,10 @@ int main(int argc, char *argv[])
             cout << fileName << " saved" << endl;
             break;
         }
-        if(!strcmp(msg, "File not found!")){
+        if(strcmp(msg, "File not found!")){
             cout << "File " << fileName << " does not exist in the server" << endl;
             break;
         }
-        fprintf(stdout, msg);
         fwrite(msg , 1 , sizeof(msg) , myfile );   
         memset(&msg, 0, sizeof(msg));
     }

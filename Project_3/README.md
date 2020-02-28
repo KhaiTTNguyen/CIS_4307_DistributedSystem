@@ -1,4 +1,4 @@
-# Khai_Nguyen_Scalability & Concurrency
+# Khai_Nguyen_Logical_Clocks
 Project 3: Lamport and Vector Clock
 
 ## Introduction

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".chatActivity">
+
+    <TextView
+        android:id="@+id/chatLogView"
+        android:layout_width="410dp"
+        android:layout_height="453dp"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/retreiveChatLogButton"
+        android:layout_width="match_parent"
+        android:layout_height="78dp"
+        android:text="Retreive Chat Log" />
+
+    <Button
+        android:id="@+id/deregisterButton"
+        android:layout_width="match_parent"
+        android:layout_height="73dp"
+        android:text="Deregister" />
+
+</LinearLayout>

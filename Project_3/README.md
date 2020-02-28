@@ -38,10 +38,13 @@ $java -jar chat_server.jar
 ```
 
 2. User loads up app
+![](images/step_1.PNG)
 3. Client enter userName and hit "Join"
+![](images/step_2.PNG)
 4. Client receive ACK/Error
 5. ChatActivity page loads up, "Retrieve Chat Log" or "Deregister" can be chosen
 6. "Retrieve Chat Log": message will be received from server & sorted in a PriorityQueue
+![](images/step_3.PNG)
 7. "Deregister": User is kicked out from Registered list by server
 
 

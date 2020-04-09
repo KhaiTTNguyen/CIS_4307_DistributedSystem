@@ -1,0 +1,54 @@
+Read the Raft paper (Links to an external site.). 
+
+The paper spells out exactly which RPCs you need to implement, and what those RPCs need to do. 
+The paper will be very helpful in implementing this project!
+
+Testing Requirements
+Implement the leader election part of the RAFT protocol. This will ensure that 
+(1) at most one replicated data store is a leader at one time (safety)
+(2) any majority of the nodes will eventually elect a leader (liveness).
+
+
+- implement a set of N Python processes that will communicate with each other using rpyc
+- NO need to implement the replication of log entries 
+(though you will need to implement a subset of the AppendEntries RPC)
+- Implement a client function that can query your RAFT nodes to determine the leader.
+
+
+Functions:
+Steps in leader election:
+
+
+
+STATE = FOLLOWER, CANDIDATE, LEADER 
+0.0 Read the paper
+0. How RPC work?
+
+1. RequestVote() RPC & RequestVote() RPC handler
+    * RequestVote(): vote for it self & broadcast voteRequests
+    * get majority --> STATE = LEADER
+
+2. Implement heartbeats, ~AppendEntries RPC, have the leader send them out periodically.
+    * heartbeat timeouts for FOLLOWERS --> 
+
+3. AppendEntries RPC handler: that resets the election timeout so that other servers don’t step forward as leaders when one has already been elected.
+4. electionTimeouts different for all modes
+
+
+6. replication log? recording term #? for every electionTimeouts --> new Term
+7. 
+
+
+
+Persistent storage
+
+Portions of the state of the processes need to be made persistent, 
+even in the presence of crashes (and subsequent recoveries). 
+When you write to a file, the data normally stays in the in-memory disk cache. 
+
+### To ensure it gets written out, use f.flush() followed by os.fsync(f.fileno()) to ensure this behavior. 
+
+You can create files to keep persistent state, but if you do so, please keep them in the /tmp directory.
+
+Debug:
+https://docs.python.org/3/library/logging.html

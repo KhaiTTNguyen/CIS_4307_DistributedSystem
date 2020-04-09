@@ -43,7 +43,7 @@ using namespace std;
 
 #define READ_BUFF_SIZE 1500
 #define MAX_CACHE_SIZE 30
-//6.4e+7
+// 6.4e+7
 
 class Cache{
     list<string> LRU_Queue; 

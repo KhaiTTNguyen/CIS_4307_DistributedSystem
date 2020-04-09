@@ -9,9 +9,9 @@
 int main(int argc, char *argv[])
 {
     //for the server, we only need to specify a port number
-    if(argc < 3)
+    if(argc != 3)
     {
-        cerr << "Usage: ./myserver port file_directory" << endl;
+        cerr << "Usage: ./tcp_server port file_directory" << endl;
         exit(0);
     }
     //grab the port number
@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
         
         string fileName = std::string(msg);
         if (file_cache.refer(fileName,dirName) == 1){
+            file_cache.display();
             cout << msg << " sent to the client" << endl;
             memset(&msg, 0, sizeof(msg)); //clear the buffer
             

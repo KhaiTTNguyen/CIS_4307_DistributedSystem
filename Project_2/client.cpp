@@ -11,7 +11,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     //we need 2 things: ip address and port number, in that order
-    if(argc < 5){
+    if(argc != 5){
         cerr << "Usage: server_ip port file local_dir_to_store" << endl; exit(0); 
     } //grab the IP address and port number 
     char *serverIp = argv[1]; int port = atoi(argv[2]); char* fileName = argv[3]; char* dirName = argv[4];

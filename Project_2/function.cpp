@@ -60,7 +60,7 @@ int Cache::refer(string fileName, string dirName)
     }
     // push to front of queue 
     LRU_Queue.push_front(fileName);
-    //cout<< "Current size after adding "<< fileName << " is " << cache_size << endl; 
+    cout<< "Current size after adding "<< fileName << " is " << cache_size << endl; 
     return 1;
 } 
   

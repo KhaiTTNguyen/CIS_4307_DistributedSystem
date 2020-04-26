@@ -21,10 +21,10 @@ class MyService(rpyc.Service):
         # (to finalize the service, if needed)
         pass
 
-    def exposed_get_answer(self): # this is an exposed method
+    def exposed_get_response(self): # this is an exposed method
         return 42
 
-    exposed_the_real_answer_though = 43     # an exposed attribute
+    exposed_the_real_response_though = 43     # an exposed attribute
 
     def get_question(self):  # while this method is not exposed
         return "what is the airspeed velocity of an unladen swallow?"
@@ -40,7 +40,6 @@ protocol.
 this is an rpyc Service
 '''
 class RaftNode(rpyc.Service):
-
 
 	"""
 		Initialize the class using the config file provided and also initialize
@@ -62,8 +61,8 @@ class RaftNode(rpyc.Service):
 			confdict.update({node_name: ip_addr})
 
 		# set variabes for constructor : my ID, leaderID
-		self.no_of_servers = int(confdict["N"])
-		self.majority = (self.no_of_servers // 2) + 1 # raft is k-fault tolertant, w/ group size N = 2k+1
+		self.num_servers = int(confdict["N"])
+		self.majority = (self.num_servers // 2) + 1 # raft is k-fault tolertant, w/ group size N = 2k+1
 		del confdict["N"]
 		del confdict["node"+str(int(server_no))]			# cross out current node
 		self.server_list = []
@@ -76,7 +75,7 @@ class RaftNode(rpyc.Service):
 		self.vote = 0
 
 		# set logFile for persistent storage
-		self.logFile = open("./tmp/node"+str(server_no)+".txt", "a") # create log file for booted server
+		self.logFile = open(os.path.join("./tmp", "node" + str(server_no) + ".txt"), "a") # create log file for booted server
 		self.logFile.close()
 		if self.is_non_zero_file(self.logFile.name):
 			self.currentTerm, self.votedFor = self.check_state_file(self.logFile.name)
@@ -87,6 +86,7 @@ class RaftNode(rpyc.Service):
 			self.votedFor = None
 		self.fileLock = threading.Lock()
 
+		# since each server is ran on a thread, locks needed for mutual exclusion
 		self.voteLock = threading.Lock()
 		self.appendLock = threading.Lock()
 
@@ -101,37 +101,35 @@ class RaftNode(rpyc.Service):
 	# start timer - use threading.Timer(time, startFunction) - startFunction will be exec'ed once time expires
 	def enterFollowerState(self):
 		while True:
-			timeout_val = randint(10, 50)
-			timeout_val = timeout_val / 10
+			election_timeout = randint(30, 70)
+			election_timeout = election_timeout / 10
 			self.Voted = False
 			self.stop_leader.clear() # set to false
-			self.node_timeout = threading.Timer(float(timeout_val), self.enterCandidateState) # threading.Timer - A thread that executes a function after timeout_val expires.
-			self.node_timeout.start()	
-			self.node_timeout.join()
+			self.electionTimeoutThread = threading.Timer(float(election_timeout), self.enterCandidateState) # threading.Timer - A thread that executes a function after election_timeout expires.
+			self.electionTimeoutThread.start()	
+			self.electionTimeoutThread.join()
 
 	def enterCandidateState(self):
+		print("Turned into candidate")
 		self.fileLock.acquire()
 		self.currentTerm += 1
 		self.votedFor = self.ID
 		self.Voted = True
-		self.update_state_file(self.logFile.name)
+		self.update_log_file(self.logFile.name)
 		self.fileLock.release()
 		
 		self.vote = 1
-		threads = []
+		server_threads_list = []
 		# print("Server list is:" + str(self.server_list))
 
-		for n in range(self.no_of_servers-1):
+		for n in range(self.num_servers-1):
 			address, port = self.server_list[n].split(':')
-
-			#conn = rpyc.connect(a, b).root
-			#term, answer = conn.RequestVote(self.currentTerm, self.ID)
-			# ask localhost:5001, ...  for votes 
-			askOtherServerThread = threading.Thread(target=self.get_vote, args=[address, port], kwargs={})
-			threads.append(askOtherServerThread)
+			# ask localhost:60001, ...  for votes 
+			askOtherServerThread = threading.Thread(target=self.get_vote, args=(address, port), kwargs={})
+			server_threads_list.append(askOtherServerThread)
 			askOtherServerThread.start()
 
-		for thread in threads:
+		for thread in server_threads_list:
 			thread.join()
 		
 		# after gett all votes back
@@ -140,25 +138,25 @@ class RaftNode(rpyc.Service):
 			self.leaderLoop()
 		else:
 			print("Not getting majority. Turns back to candidate")
-			self.enterFollowerState()
+			pass
 
 	def get_vote(self, address, port):
 		try:
 			conn = rpyc.connect(address, port).root
-			term, answer = conn.RequestVote(self.currentTerm, self.ID)
+			print("Connected")
+			term, response = conn.requestVote(self.currentTerm, self.ID)
 		except ConnectionRefusedError:
-				term, answer = (self.currentTerm, False)
+				term, response = (self.currentTerm, False)
 		except EOFError:
-			term, answer = (self.currentTerm, False)
+			term, response = (self.currentTerm, False)
 		except socket.error:
-			term, answer = (self.currentTerm, False)
+			term, response = (self.currentTerm, False)
 
 		# get responses from a Follower	
-		if answer :
+		if response :
 			self.vote += 1
 
-
-
+	# helper funcs for persistent storage files
 	def is_non_zero_file(self, fpath):
 		return os.stat(fpath).st_size != 0
 
@@ -169,7 +167,7 @@ class RaftNode(rpyc.Service):
 			last = lines[-1]
 		return tuple(last.split(','))
 
-	def update_state_file(self, fname):
+	def update_log_file(self, fname):
 		with open(fname, 'a') as fp:
 			fp.write(str(self.currentTerm) + ',' + str(self.votedFor) + '\n')
 
@@ -180,24 +178,23 @@ class RaftNode(rpyc.Service):
 				self.stop_leader.clear()
 				break
 			vote = 1
-			for n in range(self.no_of_servers-1):
+			for n in range(self.num_servers-1):
 				try:
-					a, b = self.server_list[n].split(':')
-					conn = rpyc.connect(a, b).root
-					term, answer = conn.AppendEntries(self.currentTerm, self.ID)
+					address, port = self.server_list[n].split(':')
+					conn = rpyc.connect(address, port).root
+					term, response = conn.appendEntries(self.currentTerm, self.ID)
 				except ConnectionRefusedError:
-					term, answer = (self.currentTerm, False)
+					term, response = (self.currentTerm, False)
 				except EOFError:
-					term, answer = (self.currentTerm, False)
+					term, response = (self.currentTerm, False)
 				except socket.error:
-					term, answer = (self.currentTerm, False)
-				if answer:
+					term, response = (self.currentTerm, False)
+				if response:
 					vote += 1
-			if vote < self.majority:
-				self.stop_leader.set()
+			if vote < self.majority: # no longer a leader
 				break
-		print("Entered election timeout period")
-		self.enterFollowerState()
+		# print("Entered election timeout period")
+		# self.enterFollowerState()
 
 	'''
 	if the name starts with exposed_, the attribute will be remotely accessible, 
@@ -209,12 +206,12 @@ class RaftNode(rpyc.Service):
 		else:
 			return False
 
-	def exposed_AppendEntries(self, term, leaderId):
+	def exposed_appendEntries(self, term, leaderId):
 		if term < self.currentTerm:
 			return (self.currentTerm, False)
 		else:
 			self.appendLock.acquire()
-			self.node_timeout.cancel()		# stop timer thread
+			self.electionTimeoutThread.cancel()		# stop timer thread
 			self.stop_leader.set()			# if receive this, meaning there is another leader running, stop yourself
 			self.currentTerm = term
 			self.leaderID = leaderId
@@ -222,13 +219,13 @@ class RaftNode(rpyc.Service):
 			print("\n" + str(self.leaderID) + " is my leader with term: " + str(term) + " and my ID is " + str(self.ID))
 			return (self.currentTerm, True)
 
-	def exposed_RequestVote(self, term, candidateId):
+	def exposed_requestVote(self, term, candidateId):
 		if term > self.currentTerm and not self.Voted:
 			self.voteLock.acquire()
-			self.node_timeout.cancel()		# stop timer thread
+			self.electionTimeoutThread.cancel()		# stop timer thread
 			self.currentTerm = term
 			self.votedFor = candidateId
-			self.update_state_file(self.logFile.name)
+			self.update_log_file(self.logFile.name)
 			self.Voted = True
 			self.voteLock.release()
 			return(self.currentTerm, True)

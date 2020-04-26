@@ -14,7 +14,7 @@ This folder consists of a Leader Election model of the Raft Consensus algorithm 
 * Raft Protocol 
     - Quick play with this animation: http://thesecretlivesofdata.com/raft/
     - Some detail explaination: https://raft.github.io/
-    - Brief description located at ./reference/[CIS_4307]_RaftConsensusProtocol_KhaiNguyen.pdf
+    - Brief description located at: https://tinyurl.com/ybyz8jpb 
     - Full description: https://raft.github.io/raft.pdf
 
     The implementation must satisfy: 

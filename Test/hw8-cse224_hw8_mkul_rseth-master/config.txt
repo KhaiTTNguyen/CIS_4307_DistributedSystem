@@ -1,6 +1,0 @@
-N: 5
-node0: localhost:60001
-node1: localhost:60002
-node2: localhost:60003
-node3: localhost:60004
-node4: localhost:60005
